@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Letter</title>
+    <style>
+        :root {
+            --bg-color: #ffe4e6;
+            --window-bg: #fff1f2;
+            --primary-pink: #f43f5e;
+            --border-pink: #fda4af;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+
+        /* Retro Window Container */
+        .window {
+            background-color: var(--window-bg);
+            border: 4px solid var(--border-pink);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(244, 63, 94, 0.2);
+            width: 380px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Title Bar */
+        .titlebar {
+            background-color: var(--border-pink);
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .win-btn {
+            width: 12px;
+            height: 12px;
+            border: 2px solid white;
+            background: transparent;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 30px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hearts-row {
+            color: var(--primary-pink);
+            font-size: 18px;
+            letter-spacing: 5px;
+        }
+
+        h1 {
+            color: var(--primary-pink);
+            font-size: 24px;
+            margin: 0;
+        }
+
+        /* Pixel Cat Canvas / Placeholder Wrapper */
+        .pixel-art {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        /* CSS Pixel Cat + Heart Illustration */
+        .cat-graphic {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--primary-pink) 25%, transparent 26%) no-repeat 50% 65%/45px 45px;
+            position: relative;
+        }
+        /* Minimalist fallback grid to resemble the video's pixel look */
+        .cat-graphic::before, .cat-graphic::after {
+            content: '';
+            position: absolute;
+            background: #27272a;
+        }
+        /* Cat Head & Ears */
+        .cat-graphic::before {
+            width: 70px;
+            height: 50px;
+            left: 25px;
+            top: 40px;
+            box-shadow: -10px -15px 0 #27272a, 40px -15px 0 #27272a;
+            border-radius: 4px;
+        }
+        /* Cat Eyes */
+        .cat-graphic::after {
+            width: 10px;
+            height: 10px;
+            background: white;
+            left: 35px;
+            top: 50px;
+            box-shadow: 40px 0 0 white, 0 0 0 2px #27272a, 40px 0 0 2px #27272a;
+        }
+
+        /* Buttons Structure */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .btn {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 16px;
+            border: 3px solid var(--primary-pink);
+            background: white;
+            color: var(--primary-pink);
+            padding: 10px 30px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.1s ease, background-color 0.2s;
+            outline: none;
+        }
+
+        .btn:hover {
+            background-color: var(--window-bg);
+        }
+
+        /* Evading 'NO' Button styles */
+        #btnNo {
+            position: absolute;
+            z-index: 10;
+        }
+
+        /* Floating Hearts Animation */
+        .floating-heart {
+            position: absolute;
+            color: var(--primary-pink);
+            font-size: 20px;
+            user-select: none;
+            pointer-events: none;
+            animation: floatUp 3s linear forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window">
+        <!-- Title Bar -->
+        <div class="titlebar">
+            <span>LOVE</span>
+            <div class="window-buttons">
+                <div class="win-btn"></div>
+                <div class="win-btn"></div>
+                <div class="win-btn"></div>
+            </div>
+        </div>
+
+        <!-- Main Window Body -->
+        <div class="content">
+            <div class="hearts-row">♥♥♥♥</div>
+            
+            <h1 id="headline">Do you love me?</h1>
+            
+            <div class="pixel-art">
+                <div class="cat-graphic"></div>
+                <!-- The NO button lives inside or relative to this area initially -->
+                <button id="btnNo" class="btn" style="top: 75px; left: -10px;">NO</button>
+            </div>
+
+            <div class="buttons-container">
+                <button id="btnYes" class="btn">YES</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btnNo = document.getElementById('btnNo');
+        const btnYes = document.getElementById('btnYes');
+        const headline = document.getElementById('headline');
+
+        // Logic to make the 'NO' button run away on hover/click
+        function moveNoButton() {
+            // Calculate random boundary coordinates within viewport constraints
+            const padding = 50;
+            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - padding * 2) + padding;
+            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - padding * 2) + padding;
+            
+            // Re-anchor dynamically directly to document body space to avoid layout cuts
+            document.body.appendChild(btnNo);
+            
+            btnNo.style.left = `${x}px`;
+            btnNo.style.top = `${y}px`;
+        }
+
+        btnNo.addEventListener('mouseenter', moveNoButton);
+        btnNo.addEventListener('click', moveNoButton);
+
+        // Logic when 'YES' is clicked
+        btnYes.addEventListener('click', () => {
+            headline.textContent = "Yippeee! ❤️";
+            btnNo.style.display = 'none';
+            btnYes.style.display = 'none';
+            
+            // Trigger floating heart rain
+            setInterval(createHeart, 150);
+        });
+
+        // Helper function to spawn randomized floating background hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 2 + 's';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
